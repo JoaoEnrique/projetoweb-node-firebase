@@ -1,0 +1,89 @@
+<div class="container">
+    <div class="row">
+        <div class="col-1">
+            &nbsp;
+        </div>
+        <div class="col bg-primary rounded">
+            <nav class="navbar bg-primary navbar-expand-lg" data-bs-theme="dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/">SISTEMA WEB</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav">
+                            <a class="nav-link active" aria-current="page" href="/">Cadastrar</a>
+                            <a class="nav-link" href="/consulta">Consultar</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div class="col-1">
+            &nbsp;
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">
+            &nbsp;
+        </div>
+        <div class="col bg-white">
+            &nbsp;
+        </div>
+        <div class="col-1">
+            &nbsp;
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">
+            &nbsp;
+        </div>
+        <div class="col bg-white rounded">
+            {{#if success}}
+                <div class="alert alert-success alert-dismissible fade show text-left" role="alert">
+                    <strong>Sucesso!</strong> {{success}}
+                    <button onclick="window.location = '/'" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {{/if}}
+
+            {{#if danger}}
+                <div class="alert alert-danger alert-dismissible fade show text-left" role="alert">
+                    <strong>Sucesso!</strong> {{danger}}
+                    <button onclick="window.location = '/'" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {{/if}}
+
+            <p class="text-start fs-5">Consultar - Agendamento de Potenciais Clientes</p>
+            <p>
+                <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Telefone</th>
+                        <th scope="col">Origem</th>
+                        <th scope="col">Contato</th>
+                        <th scope="col">Observação</th>
+                        <th scope="col">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each agendamentos}}
+                        <tr>
+                            <td>{{this.nome}}</td>
+                            <td>{{this.telefone}}</td>
+                            <td>{{this.origem}}</td>
+                            <td>{{formatarData this.data_contato}}</td>
+                            <td>{{this.observacao}}</td>
+                            <td>Ação</td>
+                        </tr>
+                    {{/each}}
+                    <tr>
+                </tbody>
+            </table>
+            </p>
+        </div>
+        <div class="col-1">
+            &nbsp;
+        </div>
+    </div>
+</div>
