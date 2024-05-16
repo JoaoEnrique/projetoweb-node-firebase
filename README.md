@@ -1,5 +1,15 @@
 CRUD com Firebase
 
+```cmd
+npm install express --save
+npm install express-handlebars --save
+npm install body-parser --save
+npm install firebase-admin --save
+
+node app.js
+http://localhost:8081
+```
+
 # CREATE
 ```JS
 app.post("/cadastrar", function(req, res){
