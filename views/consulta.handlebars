@@ -33,7 +33,8 @@
                             <td>{{formatarData data_contato}}</td>
                             <td>{{observacao}}</td>
                             <td>
-                                <a class="button button-primary" href="/editar/{{id}}">Editar</a>
+                                <a class="btn btn-outline-primary" href="/editar/{{id}}">Editar</a>
+                                <button data-bs-toggle="modal" data-bs-target="#confirm-delete-{{id}}" class="btn btn-outline-danger" href="/editar/{{id}}">Apagar</button>
                             </td>
                         </tr>
                     {{/each}}
@@ -44,3 +45,7 @@
         </div>
     </div>
 </div>
+
+{{#each agendamentos}}
+    {{> modal_confirm_delete}}
+{{/each}}

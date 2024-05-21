@@ -77,12 +77,19 @@ app.get("/editar/:id", function(req, res){
 
 // DELETE
 app.get("/excluir/:id", function(req, res){
+    agendamentoId = req.params.id;
+    db.collection('agendamentos').doc(agendamentoId).delete().then(function(){
+        res.redirect('/consulta?success=Agendamento excluido com sucesso')
+    }).catch(erro => {
+        res.redirect(`/consulta?danger=Erro ao excluir agendamento: ${erro}`)
+    })
 })
 
 // POST
 // CREATE
 app.post("/cadastrar", function(req, res){
-    var result = db.collection('agendamentos').add({
+    dados = {}
+    db.collection('agendamentos').add({
         nome: req.body.nome,
         telefone: req.body.telefone,
         origem: req.body.origem,
