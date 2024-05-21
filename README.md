@@ -102,4 +102,11 @@ app.get("/excluir/:id", function(req, res){
 })
 ```
 
+# READ
+![image](https://github.com/JoaoEnrique/projetoweb-node-firebase/assets/87030375/1e9797ee-0216-4205-902b-9dfa44f4af74)
+
+# CREATE
+![image](https://github.com/JoaoEnrique/projetoweb-node-firebase/assets/87030375/0241cd35-dfe9-4b5e-9730-1d7242a5a80e)
+
+
 ![image](https://github.com/JoaoEnrique/projetoweb-node-firebase/assets/87030375/c7e369ac-5b2d-41e5-b0d0-6bd7376cec38)
