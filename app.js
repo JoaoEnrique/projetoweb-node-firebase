@@ -19,6 +19,9 @@ app.engine("handlebars", handlebars({
     helpers: {
         formatarData: (date) => {
             return moment(date).format('DD/MM/YYYY')
+        },
+        ifEquals: function(arg1, arg2) {
+            return arg1 == arg2;
         }
     }
 }))
@@ -27,30 +30,57 @@ app.set("view engine", "handlebars")
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
+// GET
+// CREATE
 app.get("/", function(req, res){
     const success = req.query.success ? req.query.success : null;
     const danger = req.query.danger ? req.query.danger : null;
     res.render("primeira_pagina", { success, danger })
 })
 
+// READ
 app.get("/consulta", function(req, res){
+    const success = req.query.success ? req.query.success : null;
+    const danger = req.query.danger ? req.query.danger : null;
+    
     db.collection('agendamentos').get().then(querySnapshot => {
         let agendamentos = [];
         querySnapshot.forEach(documentSnapshot => {
-            agendamentos.push(documentSnapshot.data());
+            let a = documentSnapshot.data();
+            a.id = documentSnapshot.id;
+            agendamentos.push(a);
         });
-        res.render("consulta", { agendamentos });
+        res.render("consulta", { success, danger, agendamentos });
     }).catch(erro => {
         res.redirect(`/?danger=Erro ao consultar: ${erro}`)
     });
 })
 
+// UPDATE
 app.get("/editar/:id", function(req, res){
+    const success = req.query.success ? req.query.success : null;
+    const danger = req.query.danger ? req.query.danger : null;
+    const agendamentoId = req.params.id;
+
+    db.collection('agendamentos').doc(agendamentoId).get().then(documentSnapshot => {
+        if(documentSnapshot.exists){
+            const agendamento = documentSnapshot.data();
+            agendamento.id = agendamentoId;
+            res.render("primeira_pagina", { success, danger, agendamento})
+        }else 
+            res.redirect(`/consulta?danger=O agendamento não exite ou foi apagado`);
+
+    }).catch(erro =>{
+        res.redirect(`/consulta?danger=Erro ao buscar agendamento para atualização: ${erro}`);
+    })
 })
 
+// DELETE
 app.get("/excluir/:id", function(req, res){
 })
 
+// POST
+// CREATE
 app.post("/cadastrar", function(req, res){
     var result = db.collection('agendamentos').add({
         nome: req.body.nome,
@@ -60,13 +90,34 @@ app.post("/cadastrar", function(req, res){
         observacao: req.body.observacao
     }).then(function(){
         res.redirect('/consulta?success=Criado com sucesso')
-    }).catch(function(erro){
+    }).catch(erro =>{
         res.redirect(`/consulta?danger=Erro ao salvar: ${erro}`)
     })
 })
 
+// POST
+// UPDATE
 app.post("/atualizar", function(req, res){
-})
+    const agendamentoId = req.body.id;
+
+    if (!agendamentoId) {
+        return res.redirect('/consulta?danger=ID do agendamento não fornecido');
+    }
+
+    db.collection('agendamentos').doc(agendamentoId).update({
+        nome: req.body.nome,
+        telefone: req.body.telefone,
+        origem: req.body.origem,
+        data_contato: req.body.data_contato,
+        observacao: req.body.observacao
+    }).then(function(){
+        res.redirect(`/consulta?success=Agendamento atualizado`);
+    })
+    .catch(erro =>{
+        res.redirect(`/consulta?danger=Erro ao atualizar agendamento: ${erro}`);
+    })
+});
+
 
 app.listen(8081, function(){
     console.log("\n\nhttp://localhost:8081\n\n")

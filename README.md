@@ -1,4 +1,4 @@
-CRUD com Firebase
+# CRUD com Firebase
 
 ```cmd
 npm install express --save
@@ -42,4 +42,52 @@ app.get("/consulta", function(req, res){
     });
 })
 ```
+
+# UPDATE
+## GET
+```js
+app.get("/editar/:id", function(req, res){
+    const success = req.query.success ? req.query.success : null;
+    const danger = req.query.danger ? req.query.danger : null;
+    const agendamentoId = req.params.id;
+
+    db.collection('agendamentos').doc(agendamentoId).get().then(documentSnapshot => {
+        if(documentSnapshot.exists){
+            const agendamento = documentSnapshot.data();
+            agendamento.id = agendamentoId;
+            res.render("primeira_pagina", { success, danger, agendamento})
+        }else 
+            res.redirect(`/consulta?danger=O agendamento não exite ou foi apagado`);
+
+    }).catch(erro =>{
+        res.redirect(`/consulta?danger=Erro ao buscar agendamento para atualização: ${erro}`);
+    })
+})
+```
+
+## POST
+```js
+app.post("/atualizar", function(req, res){
+    const agendamentoId = req.body.id;
+
+    if (!agendamentoId) {
+        return res.redirect('/consulta?danger=ID do agendamento não fornecido');
+    }
+
+    db.collection('agendamentos').doc(agendamentoId).update({
+        nome: req.body.nome,
+        telefone: req.body.telefone,
+        origem: req.body.origem,
+        data_contato: req.body.data_contato,
+        observacao: req.body.observacao
+    }).then(function(){
+        res.redirect(`/consulta?success=Agendamento atualizado`);
+    })
+    .catch(erro =>{
+        res.redirect(`/consulta?danger=Erro ao atualizar agendamento: ${erro}`);
+    })
+});
+
+```
+
 ![image](https://github.com/JoaoEnrique/projetoweb-node-firebase/assets/87030375/c7e369ac-5b2d-41e5-b0d0-6bd7376cec38)

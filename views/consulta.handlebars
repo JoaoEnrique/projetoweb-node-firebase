@@ -2,9 +2,6 @@
     {{> nav}}
 
     <div class="row">
-        <div class="col-1">
-            &nbsp;
-        </div>
         <div class="col bg-white rounded">
             {{#if success}}
                 {{> message_success}}
@@ -30,21 +27,20 @@
                 <tbody>
                     {{#each agendamentos}}
                         <tr>
-                            <td>{{this.nome}}</td>
-                            <td>{{this.telefone}}</td>
-                            <td>{{this.origem}}</td>
-                            <td>{{formatarData this.data_contato}}</td>
-                            <td>{{this.observacao}}</td>
-                            <td>Ação</td>
+                            <td>{{nome}}</td>
+                            <td>{{telefone}}</td>
+                            <td>{{origem}}</td>
+                            <td>{{formatarData data_contato}}</td>
+                            <td>{{observacao}}</td>
+                            <td>
+                                <a class="button button-primary" href="/editar/{{id}}">Editar</a>
+                            </td>
                         </tr>
                     {{/each}}
                     <tr>
                 </tbody>
             </table>
             </p>
-        </div>
-        <div class="col-1">
-            &nbsp;
         </div>
     </div>
 </div>
