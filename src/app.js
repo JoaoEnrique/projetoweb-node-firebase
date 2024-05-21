@@ -5,8 +5,9 @@ const bodyParser = require("body-parser")
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app')
 const { getFirestore, Timestamp, FieldValue, QuerySnapshot } = require('firebase-admin/firestore')
 const moment = require('moment');
+const path = require('path');
 
-const serviceAccount = require('./agendamentos-node-firebase-adminsdk-awqwe-85be525718.json')
+const serviceAccount = require('../agendamentos-node-firebase-adminsdk-awqwe-85be525718.json')
 
 initializeApp({
   credential: cert(serviceAccount)
@@ -16,6 +17,7 @@ const db = getFirestore()
 
 app.engine("handlebars", handlebars({
     defaultLayout: "main",
+    layoutsDir: path.join(__dirname, 'views', 'layouts'),
     helpers: {
         formatarData: (date) => {
             return moment(date).format('DD/MM/YYYY')
@@ -26,6 +28,8 @@ app.engine("handlebars", handlebars({
     }
 }))
 app.set("view engine", "handlebars")
+app.set('views', path.join(__dirname, "views"));
+app.use(express.static('src'));
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())

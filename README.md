@@ -5,8 +5,9 @@ npm install express --save
 npm install express-handlebars --save
 npm install body-parser --save
 npm install firebase-admin --save
+npm install moment --save
 
-node app.js
+npm start
 http://localhost:8081
 ```
 
