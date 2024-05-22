@@ -1,4 +1,5 @@
 # CRUD com Firebase
+CRUD com firebase e MVC em node
 
 ```cmd
 npm install express --save
@@ -13,94 +14,177 @@ http://localhost:8081
 
 # CREATE
 ```JS
-app.post("/cadastrar", function(req, res){
-    var result = db.collection('agendamentos').add({
-        nome: req.body.nome,
-        telefone: req.body.telefone,
-        origem: req.body.origem,
-        data_contato: req.body.data_contato,
-        observacao: req.body.observacao
-    }).then(function(){
-        res.redirect('/consulta?success=Criado com sucesso')
-    }).catch(function(erro){
-        res.redirect(`/consulta?danger=Erro ao salvar: ${erro}`)
+//controller
+cadastrar(req, res){
+    const agendamento = new Agendamento();
+    const { nome, telefone, origem, data_contato, observacao } = req.body;
+    Object.assign(agendamento, { nome, telefone, origem, data_contato, observacao });
+
+    agendamento.cadastrar().then(result =>{
+        res.redirect(`/consulta?success=${result.message}`)
+    }).catch(error => {
+        res.redirect(`/consulta?danger=${error.message}`)
     })
-})
+}
+
+
+//model
+async cadastrar(){
+    return await db.collection('agendamentos').add({
+        nome: this.nome,
+        telefone: this.telefone,
+        origem: this.origem,
+        data_contato: this.data_contato,
+        observacao: this.observacao
+    }).then(function(){
+        return Promise.resolve({code: 201, message: `Agendamento realizado`})
+    }).catch(error =>{
+        return Promise.reject({code: 500, message: `Erro ao salvar: ${error.message}`})
+    })
+}
+
 
 ```
 
 # READ
 ```js
-app.get("/consulta", function(req, res){
-    db.collection('agendamentos').get().then(querySnapshot => {
+//controller
+listarAgendamentos(req, res){
+    let { success, danger } = this.getNotificacao(req);
+    const agendamento = new Agendamento();
+
+    agendamento.listar().then(agendamentos => {
+        res.render("consulta", { success, danger, agendamentos });
+    }).catch(error => {
+        res.redirect(`/?danger=${error.message}`)
+    })
+}
+
+//model
+async listar (){
+    return await db.collection('agendamentos').get().then(querySnapshot => {
         let agendamentos = [];
         querySnapshot.forEach(documentSnapshot => {
-            agendamentos.push(documentSnapshot.data());
+            let a = documentSnapshot.data();
+            a.id = documentSnapshot.id;
+            agendamentos.push(a);
         });
-        res.render("consulta", { agendamentos });
-    }).catch(erro => {
-        res.redirect(`/?danger=Erro ao consultar: ${erro}`)
+        return agendamentos;
+    }).catch(error => {
+        return Promise.reject({code: 500, message: `Erro ao consultar: ${error.message}`})
     });
-})
+}
 ```
 
 # UPDATE
 ## GET
 ```js
-app.get("/editar/:id", function(req, res){
-    const success = req.query.success ? req.query.success : null;
-    const danger = req.query.danger ? req.query.danger : null;
-    const agendamentoId = req.params.id;
+//controller
+editar(req, res){
+    let { success, danger } = this.getNotificacao(req);
+    const agendamento = new Agendamento();
+    agendamento.id = req.params.id;
 
-    db.collection('agendamentos').doc(agendamentoId).get().then(documentSnapshot => {
+    if(!agendamento.id)
+        res.redirect(`/consulta?danger=Erro ao buscar agendamento para atualização`);
+
+    agendamento.getAgendamentoById().then(agendamento => {
+        res.render('primeira_pagina', { success, danger, agendamento})
+    }).catch(error =>{
+        res.redirect(`/consulta?danger=${error.message}`)
+    })
+    
+}
+
+//model
+async getAgendamentoById(){
+    if(!this.id)
+        return Promise.reject({code: 500, message: "Id não informado"})
+
+    return await db.collection('agendamentos').doc(this.id).get().then(documentSnapshot => {
         if(documentSnapshot.exists){
             const agendamento = documentSnapshot.data();
-            agendamento.id = agendamentoId;
-            res.render("primeira_pagina", { success, danger, agendamento})
-        }else 
-            res.redirect(`/consulta?danger=O agendamento não exite ou foi apagado`);
+            if(!agendamento)
+                return Promise.reject({code: 404, message: "Usuário não encontrado"})
 
-    }).catch(erro =>{
-        res.redirect(`/consulta?danger=Erro ao buscar agendamento para atualização: ${erro}`);
+            agendamento.id = this.id;
+            return agendamento;
+        }else 
+            return Promise.reject({code: 404, message: `O agendamento não exite ou foi apagado`})
+
+    }).catch(error =>{
+        return Promise.reject({code: 500, message: `Erro ao buscar agendamento para atualização: ${error.message}`})
     })
-})
+}
 ```
 
 ## POST
 ```js
-app.post("/atualizar", function(req, res){
-    const agendamentoId = req.body.id;
+//controller
+atualizar(req, res){
+    const agendamento = new Agendamento();
+    agendamento.id = req.body.id
+    const { nome, telefone, origem, data_contato, observacao } = req.body;
+    Object.assign(agendamento, { nome, telefone, origem, data_contato, observacao });
 
-    if (!agendamentoId) {
+    if (!agendamento.id)
         return res.redirect('/consulta?danger=ID do agendamento não fornecido');
-    }
 
-    db.collection('agendamentos').doc(agendamentoId).update({
-        nome: req.body.nome,
-        telefone: req.body.telefone,
-        origem: req.body.origem,
-        data_contato: req.body.data_contato,
-        observacao: req.body.observacao
+    agendamento.atualizar().then(result =>{
+        res.redirect(`/consulta?success=${result.message}`)
+    }).catch(error => {
+        res.redirect(`/consulta?danger=${error.message}`)
+    })
+}
+
+//model
+async atualizar(){
+    if(!this.id)
+        return Promise.reject({code: 500, message: "Id não informado"})
+
+    return await db.collection('agendamentos').doc(this.id).update({
+        nome: this.nome,
+        telefone: this.telefone,
+        origem: this.origem,
+        data_contato: this.data_contato,
+        observacao: this.observacao
     }).then(function(){
-        res.redirect(`/consulta?success=Agendamento atualizado`);
+        return Promise.resolve({code: 200, message: `Agendamento atualizado`})
     })
-    .catch(erro =>{
-        res.redirect(`/consulta?danger=Erro ao atualizar agendamento: ${erro}`);
+    .catch(error =>{
+        return Promise.reject({code: 500, message: `Erro ao atualizar: ${error.message}`})
     })
-});
-
+}
 ```
 
 # DELETE
 ```js
-app.get("/excluir/:id", function(req, res){
-    agendamentoId = req.params.id;
-    db.collection('agendamentos').doc(agendamentoId).delete().then(function(){
-        res.redirect('/consulta?success=Agendamento excluido com sucesso')
-    }).catch(erro => {
-        res.redirect(`/consulta?danger=Erro ao excluir agendamento: ${erro}`)
+//controller
+excluir(req, res){
+    const agendamento = new Agendamento();
+    agendamento.id = req.params.id;
+
+    if(!agendamento.id)
+        res.redirect(`/consulta?danger=Erro ao excluir agendamento: ID não encontrado`)
+        
+    agendamento.exlcuir().then(result => {
+        res.redirect(`/consulta?success=${result.message}`)
+    }).catch(error =>{
+        res.redirect(`/consulta?danger=${error.message}`)
     })
-})
+}
+
+//model
+async exlcuir(){
+    if(!this.id)
+        return Promise.reject({code: 500, message: "Id não informado"})
+
+    return db.collection('agendamentos').doc(this.id).delete().then(function(){
+        return Promise.resolve({code: 200, message: `Agendamento excluido`})
+    }).catch(erro => {
+        return Promise.reject({code: 500, message: `Erro ao atualizar: ${error.message}`})
+    })
+}
 ```
 
 # READ
