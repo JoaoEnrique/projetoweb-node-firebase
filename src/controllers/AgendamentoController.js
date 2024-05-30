@@ -1,5 +1,5 @@
 import { db } from '../index.js';
-import { Agendamento } from '../src/models/Agendamento.js';
+import { Agendamento } from '../src/models/Agendamento.js.js';
 
 export class AgendamentoController{
     home(req, res){

@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "nodemon src/index.js",
+    "test": "echo \"No tests specified\" && exit 0",
+    "build": "nodemon src/index.js"
   },
   "type": "module",
   "dependencies": {
