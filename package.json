@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "start": "nodemon src/index.js",
-    "test": "echo \"No tests specified\" && exit 0",
-    "build": "nodemon src/index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "build": "echo \"Nenhuma etapa de build definida\"",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "type": "module",
   "dependencies": {

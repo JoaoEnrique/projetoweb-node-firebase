@@ -1,4 +1,4 @@
-import { db } from '../index.js';
+import { db } from '../src/index.js';
 
 export class Agendamento{
     id;

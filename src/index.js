@@ -3,8 +3,8 @@ import { engine as handlebars } from 'express-handlebars';
 import bodyParser from 'body-parser';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { formatarData, ifEquals } from './helpers/helper.js';
-import { router } from './routes.js';
+import { formatarData, ifEquals } from '../helpers/helper.js';
+import { router } from '../routes.js';
 
 const app = express();
 
